@@ -31,7 +31,8 @@ import threading
 from App import controller
 from DISClib.ADT import stack
 assert config
-
+import time
+import tracemalloc
 """
 La vista se encarga de la interacción con el usuario.
 Presenta el menu de opciones  y  por cada seleccion
@@ -44,7 +45,7 @@ operación seleccionada.
 # ___________________________________________________
 
 
-servicefile = 'bus_routes_14000.csv'
+servicefile = 'bus_routes_50.csv'
 initialStation = None
 
 # ___________________________________________________
@@ -83,8 +84,15 @@ def optionThree(cont):
 
 
 def optionFour(cont, initialStation):
+    delta_time = -1.0
+    delta_memory = -1.0
+    tracemalloc.start()
+    start_time = getTime()
     controller.minimumCostPaths(cont, initialStation)
-
+    stop_time = getTime()
+    tracemalloc.stop()
+    delta_time = stop_time - start_time
+    return delta_time
 
 def optionFive(cont, destStation):
     haspath = controller.hasPath(cont, destStation)
@@ -135,7 +143,8 @@ def thread_cycle():
         elif int(inputs[0]) == 4:
             msg = "Estación Base: BusStopCode-ServiceNo (Ej: 75009-10): "
             initialStation = input(msg)
-            optionFour(cont, initialStation)
+            delta_time=optionFour(cont, initialStation)
+            print("Tiempo [ms]: ", f"{delta_time:.3f}")
 
         elif int(inputs[0]) == 5:
             destStation = input("Estación destino (Ej: 15151-10): ")
@@ -158,3 +167,10 @@ if __name__ == "__main__":
     sys.setrecursionlimit(2 ** 20)
     thread = threading.Thread(target=thread_cycle)
     thread.start()
+
+
+def getTime():
+    """
+    devuelve el instante tiempo de procesamiento en milisegundos
+    """
+    return float(time.perf_counter()*1000)
