@@ -45,7 +45,7 @@ operación seleccionada.
 # ___________________________________________________
 
 
-servicefile = 'bus_routes_50.csv'
+servicefile = 'bus_routes_14000.csv'
 initialStation = None
 
 # ___________________________________________________
@@ -85,7 +85,6 @@ def optionThree(cont):
 
 def optionFour(cont, initialStation):
     delta_time = -1.0
-    delta_memory = -1.0
     tracemalloc.start()
     start_time = getTime()
     controller.minimumCostPaths(cont, initialStation)
@@ -152,8 +151,15 @@ def thread_cycle():
 
         elif int(inputs[0]) == 6:
             destStation = input("Estación destino (Ej: 15151-10): ")
+            delta_time = -1.0
+            tracemalloc.start()
+            start_time = getTime()
             optionSix(cont, destStation)
-
+            stop_time = getTime()
+            tracemalloc.stop()
+            delta_time = stop_time - start_time
+            print("Tiempo [ms]: ", f"{delta_time:.3f}")
+            
         elif int(inputs[0]) == 7:
             optionSeven(cont)
 
